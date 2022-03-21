@@ -1,0 +1,20 @@
+{
+  "name": "ruby-script",
+  "version": "1.0.0",
+  "description": "- [ ] Parser(lang to ast) - [ ] Compiler(ast to JS)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc src/*.ts --outDir dist/",
+    "dev-run": "npm run build && node dist/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^17.0.21",
+    "ts-node": "^10.7.0",
+    "ts-node-dev": "^1.1.8",
+    "tslib": "^2.3.1",
+    "typescript": "^4.6.2"
+  }
+}
