@@ -5,7 +5,9 @@ var Tokenizer = /** @class */ (function () {
         this.$input = $input;
     }
     Tokenizer.prototype.readNext = function () {
+        this.readWhile(this.isWhiteSpace);
         var input = this.$input;
+        console.log(input);
         if (input.eof())
             return null;
         var ch = input.peek();
@@ -30,6 +32,7 @@ var Tokenizer = /** @class */ (function () {
         input.croak("Can't handle character: " + ch);
         // console.log(`Skipped: ${ch}`)
     };
+    // not sure if I understand this correctly
     Tokenizer.prototype.isWhiteSpace = function (ch) {
         return " \t\n".indexOf(ch) >= 0;
     };
@@ -50,7 +53,6 @@ var Tokenizer = /** @class */ (function () {
         var str = "";
         // Pass current char to the callback
         // and put that in str var while true
-        console.debug("ENTER READWHILE");
         while (!this.$input.eof() && callback(this.$input.peek())) {
             str += this.$input.next();
         }

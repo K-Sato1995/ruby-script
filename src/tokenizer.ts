@@ -8,6 +8,9 @@ class Tokenizer {
   }
 
   readNext() {
+    // Remove all white space
+    this.readWhile(this.isWhiteSpace)
+
     const input = this.$input
     if(input.eof()) return null
     const ch = input.peek()
@@ -21,12 +24,12 @@ class Tokenizer {
 
     // String
     if(ch === '"') {
-      // return readString()
+      return this.readString()
     }
 
     // Numbers
     if(this.isDigit(ch)) {
-      // readNum() 
+      this.readNum(ch)
     }
 
     // Identifications
@@ -38,16 +41,17 @@ class Tokenizer {
     // console.log(`Skipped: ${ch}`)
   }
 
+  // not sure if I understand this correctly
   isWhiteSpace(ch: string) {
     return " \t\n".indexOf(ch) >= 0;
   }
 
   isDigit(ch: string) {
-      return /[0-9]/i.test(ch);
+    return /[0-9]/i.test(ch);
   }
 
   isID(ch: string) {
-    return /[a-zλ_]/i.test(ch);
+    return /[a-z_]/i.test(ch);
   }
 
   skipComment() {
@@ -56,6 +60,34 @@ class Tokenizer {
       return ch != "\n"
     })
     this.$input.next()
+  }
+
+  readNum(ch: string) {
+    return { type: "number", value: parseFloat(ch) };
+  }
+
+  readEscaped(end: '"') {
+    let escaped = false, str = ''
+    this.$input.next()
+    while(!this.$input.eof()) {
+      let ch = this.$input.next()
+      if(escaped) {
+        str += ch
+        escaped = false
+      } else if(ch == '\\') {
+        escaped = true
+      } else if (ch === end) {
+        break;
+      } else {
+        str += ch
+      }
+    }
+
+    return str
+  }
+
+  readString() {
+    return { type: "string", value: this.readEscaped('"')}
   }
 
   readWhile(callback) {

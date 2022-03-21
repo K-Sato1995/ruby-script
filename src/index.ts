@@ -1,7 +1,8 @@
 import InputStream from './input-stream'
 import Tokenizer from './tokenizer'
 
-const sourceCode = `# comment
+const sourceCode = `
+  # comment
   def test
     return 1
   end
