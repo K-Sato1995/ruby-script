@@ -7,14 +7,14 @@ class Tokenizer {
     this.$input = $input
   }
 
-  readNext(): any {
+  readNext() {
     const input = this.$input
     if(input.eof()) return null
     const ch = input.peek()
   
     // Comments
     if(ch === "#")  {
-      // skipComment()
+      this.skipComment()
       return this.readNext()
     }
 
@@ -59,9 +59,19 @@ class Tokenizer {
       return this.isDigit(ch)
     })
   }
+  
+  skipComment() {
+    // Move to the next char while in the comment line
+    this.readWhile((ch: string) => {
+      return ch != "\n"
+    })
+    this.$input.next()
+  }
 
-  readWhile(callback: any) {
+  readWhile(callback) {
     let str = ""
+    // Pass current char to the callback
+    // and put that in str var while true
     while(!this.$input.eof() && callback(this.$input.peek())) {
       str += this.$input.next()
     } 

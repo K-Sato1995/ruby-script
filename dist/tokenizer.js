@@ -11,7 +11,7 @@ var Tokenizer = /** @class */ (function () {
         var ch = input.peek();
         // Comments
         if (ch === "#") {
-            // skipComment()
+            this.skipComment();
             return this.readNext();
         }
         // String
@@ -27,6 +27,9 @@ var Tokenizer = /** @class */ (function () {
             // readID()
         }
         input.croak("Can't handle character: " + ch);
+    };
+    Tokenizer.prototype.isWhiteSpace = function (ch) {
+        return " \t\n".indexOf(ch) >= 0;
     };
     Tokenizer.prototype.isDigit = function (ch) {
         return /[0-9]/i.test(ch);
@@ -47,9 +50,20 @@ var Tokenizer = /** @class */ (function () {
             return _this.isDigit(ch);
         });
     };
+    Tokenizer.prototype.skipComment = function () {
+        // Move to the next char while in the comment line
+        this.readWhile(function (ch) {
+            return ch != "\n";
+        });
+        this.$input.next();
+    };
     Tokenizer.prototype.readWhile = function (callback) {
         var str = "";
+        console.log(this.$input.peek());
+        // Pass current char to the callback
+        // and put that in str var while true
         while (!this.$input.eof() && callback(this.$input.peek())) {
+            console.log(str);
             str += this.$input.next();
         }
         return str;

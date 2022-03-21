@@ -31,8 +31,4 @@ var InputStream = /** @class */ (function () {
     };
     return InputStream;
 }());
-var input = new InputStream("test");
-console.log(input.next());
-console.log(input);
-console.log('hello');
 exports["default"] = InputStream;
