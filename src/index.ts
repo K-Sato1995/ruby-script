@@ -9,5 +9,6 @@ const sourceCode = `# comment
 const $input = new InputStream(sourceCode)
 const token = new Tokenizer($input)
 
-
-console.log(token.skipComment())
+while(!$input.eof()) {
+  token.readNext()
+}

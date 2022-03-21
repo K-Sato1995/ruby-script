@@ -11,6 +11,7 @@ class Tokenizer {
     const input = this.$input
     if(input.eof()) return null
     const ch = input.peek()
+    console.log(ch)
   
     // Comments
     if(ch === "#")  {
@@ -34,6 +35,7 @@ class Tokenizer {
     }
 
     input.croak("Can't handle character: " + ch);
+    // console.log(`Skipped: ${ch}`)
   }
 
   isWhiteSpace(ch: string) {
@@ -48,18 +50,6 @@ class Tokenizer {
     return /[a-zλ_]/i.test(ch);
   }
 
-  readNum() {
-    let hasDot = false
-    const num = this.readWhile((ch: string) => {
-      if(ch === ".") {
-        if(hasDot) return false
-        hasDot = true
-        return true
-      }
-      return this.isDigit(ch)
-    })
-  }
-  
   skipComment() {
     // Move to the next char while in the comment line
     this.readWhile((ch: string) => {
@@ -74,7 +64,8 @@ class Tokenizer {
     // and put that in str var while true
     while(!this.$input.eof() && callback(this.$input.peek())) {
       str += this.$input.next()
-    } 
+    }
+    console.info(str)
     return str
   }
 }

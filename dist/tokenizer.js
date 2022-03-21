@@ -9,6 +9,7 @@ var Tokenizer = /** @class */ (function () {
         if (input.eof())
             return null;
         var ch = input.peek();
+        console.log(ch);
         // Comments
         if (ch === "#") {
             this.skipComment();
@@ -27,6 +28,7 @@ var Tokenizer = /** @class */ (function () {
             // readID()
         }
         input.croak("Can't handle character: " + ch);
+        // console.log(`Skipped: ${ch}`)
     };
     Tokenizer.prototype.isWhiteSpace = function (ch) {
         return " \t\n".indexOf(ch) >= 0;
@@ -37,19 +39,6 @@ var Tokenizer = /** @class */ (function () {
     Tokenizer.prototype.isID = function (ch) {
         return /[a-zλ_]/i.test(ch);
     };
-    Tokenizer.prototype.readNum = function () {
-        var _this = this;
-        var hasDot = false;
-        var num = this.readWhile(function (ch) {
-            if (ch === ".") {
-                if (hasDot)
-                    return false;
-                hasDot = true;
-                return true;
-            }
-            return _this.isDigit(ch);
-        });
-    };
     Tokenizer.prototype.skipComment = function () {
         // Move to the next char while in the comment line
         this.readWhile(function (ch) {
@@ -59,13 +48,13 @@ var Tokenizer = /** @class */ (function () {
     };
     Tokenizer.prototype.readWhile = function (callback) {
         var str = "";
-        console.log(this.$input.peek());
         // Pass current char to the callback
         // and put that in str var while true
+        console.debug("ENTER READWHILE");
         while (!this.$input.eof() && callback(this.$input.peek())) {
-            console.log(str);
             str += this.$input.next();
         }
+        console.info(str);
         return str;
     };
     return Tokenizer;
