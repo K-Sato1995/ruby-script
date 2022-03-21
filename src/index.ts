@@ -4,7 +4,7 @@ import Tokenizer from './tokenizer'
 const sourceCode = `
   # comment
   def test
-    return 1
+    "string"
   end
 `
 const $input = new InputStream(sourceCode)

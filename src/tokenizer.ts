@@ -2,9 +2,11 @@ import InputStream from './input-stream'
 
 class Tokenizer {
   $input: InputStream
+  keywords: string
 
   constructor($input: InputStream) {
     this.$input = $input
+    this.keywords = "if then else end true false def return"
   }
 
   readNext() {
@@ -14,8 +16,7 @@ class Tokenizer {
     const input = this.$input
     if(input.eof()) return null
     const ch = input.peek()
-    console.log(ch)
-  
+
     // Comments
     if(ch === "#")  {
       this.skipComment()
@@ -29,12 +30,12 @@ class Tokenizer {
 
     // Numbers
     if(this.isDigit(ch)) {
-      this.readNum(ch)
+      return this.readNum()
     }
 
     // Identifications
     if(this.isID(ch)) {
-      // readID()
+      return this.readID()
     }
 
     input.croak("Can't handle character: " + ch);
@@ -62,8 +63,24 @@ class Tokenizer {
     this.$input.next()
   }
 
-  readNum(ch: string) {
-    return { type: "number", value: parseFloat(ch) };
+  readNum() {
+    console.info(parseFloat(ch))
+    let num = this.readWhile((ch) => {
+      return this.isDigit(ch)
+    })
+    return { type: "number", value: parseFloat(num) };
+  }
+
+  readID() {
+    const id = this.readWhile(this.isID)
+    return {
+      type: this.isKeyword(id) ? "kw" : "var",
+      value: id
+    }
+  }
+
+  isKeyword(word: string) {
+    return this.keywords.indexOf(" " + word + " ") >= 0; 
   }
 
   readEscaped(end: '"') {
@@ -87,6 +104,7 @@ class Tokenizer {
   }
 
   readString() {
+    console.info( this.readEscaped('"'))
     return { type: "string", value: this.readEscaped('"')}
   }
 

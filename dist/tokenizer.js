@@ -3,15 +3,15 @@ exports.__esModule = true;
 var Tokenizer = /** @class */ (function () {
     function Tokenizer($input) {
         this.$input = $input;
+        this.keywords = "if then else end true false def return";
     }
     Tokenizer.prototype.readNext = function () {
+        // Remove all white space
         this.readWhile(this.isWhiteSpace);
         var input = this.$input;
-        console.log(input);
         if (input.eof())
             return null;
         var ch = input.peek();
-        console.log(ch);
         // Comments
         if (ch === "#") {
             this.skipComment();
@@ -19,15 +19,15 @@ var Tokenizer = /** @class */ (function () {
         }
         // String
         if (ch === '"') {
-            // return readString()
+            return this.readString();
         }
         // Numbers
         if (this.isDigit(ch)) {
-            // readNum() 
+            return this.readNum(ch);
         }
         // Identifications
         if (this.isID(ch)) {
-            // readID()
+            return this.readID();
         }
         input.croak("Can't handle character: " + ch);
         // console.log(`Skipped: ${ch}`)
@@ -40,7 +40,7 @@ var Tokenizer = /** @class */ (function () {
         return /[0-9]/i.test(ch);
     };
     Tokenizer.prototype.isID = function (ch) {
-        return /[a-zλ_]/i.test(ch);
+        return /[a-z_]/i.test(ch);
     };
     Tokenizer.prototype.skipComment = function () {
         // Move to the next char while in the comment line
@@ -48,6 +48,45 @@ var Tokenizer = /** @class */ (function () {
             return ch != "\n";
         });
         this.$input.next();
+    };
+    Tokenizer.prototype.readNum = function (ch) {
+        console.info(parseFloat(ch));
+        return { type: "number", value: parseFloat(ch) };
+    };
+    Tokenizer.prototype.readID = function () {
+        var id = this.readWhile(this.isID);
+        return {
+            type: this.isKeyword(id) ? "kw" : "var",
+            value: id
+        };
+    };
+    Tokenizer.prototype.isKeyword = function (word) {
+        return this.keywords.indexOf(" " + word + " ") >= 0;
+    };
+    Tokenizer.prototype.readEscaped = function (end) {
+        var escaped = false, str = '';
+        this.$input.next();
+        while (!this.$input.eof()) {
+            var ch = this.$input.next();
+            if (escaped) {
+                str += ch;
+                escaped = false;
+            }
+            else if (ch == '\\') {
+                escaped = true;
+            }
+            else if (ch === end) {
+                break;
+            }
+            else {
+                str += ch;
+            }
+        }
+        return str;
+    };
+    Tokenizer.prototype.readString = function () {
+        console.info(this.readEscaped('"'));
+        return { type: "string", value: this.readEscaped('"') };
     };
     Tokenizer.prototype.readWhile = function (callback) {
         var str = "";
