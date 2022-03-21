@@ -64,10 +64,10 @@ class Tokenizer {
   }
 
   readNum() {
-    console.info(parseFloat(ch))
     let num = this.readWhile((ch) => {
       return this.isDigit(ch)
     })
+    console.info(parseFloat(num))
     return { type: "number", value: parseFloat(num) };
   }
 

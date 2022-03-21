@@ -23,7 +23,7 @@ var Tokenizer = /** @class */ (function () {
         }
         // Numbers
         if (this.isDigit(ch)) {
-            return this.readNum(ch);
+            return this.readNum();
         }
         // Identifications
         if (this.isID(ch)) {
@@ -49,9 +49,13 @@ var Tokenizer = /** @class */ (function () {
         });
         this.$input.next();
     };
-    Tokenizer.prototype.readNum = function (ch) {
-        console.info(parseFloat(ch));
-        return { type: "number", value: parseFloat(ch) };
+    Tokenizer.prototype.readNum = function () {
+        var _this = this;
+        var num = this.readWhile(function (ch) {
+            return _this.isDigit(ch);
+        });
+        console.info(parseFloat(num));
+        return { type: "number", value: parseFloat(num) };
     };
     Tokenizer.prototype.readID = function () {
         var id = this.readWhile(this.isID);

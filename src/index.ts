@@ -6,6 +6,8 @@ const sourceCode = `
   def test
     "string"
   end
+
+  1
 `
 const $input = new InputStream(sourceCode)
 const token = new Tokenizer($input)
