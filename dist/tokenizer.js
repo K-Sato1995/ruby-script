@@ -29,6 +29,18 @@ var Tokenizer = /** @class */ (function () {
         if (this.isID(ch)) {
             return this.readID();
         }
+        if (this.isPunc(ch)) {
+            return {
+                type: "punc",
+                value: this.$input.next()
+            };
+        }
+        if (this.isOpChar(ch)) {
+            return {
+                type: "op",
+                value: this.readWhile(this.isOpChar)
+            };
+        }
         input.croak("Can't handle character: " + ch);
         // console.log(`Skipped: ${ch}`)
     };
@@ -41,6 +53,12 @@ var Tokenizer = /** @class */ (function () {
     };
     Tokenizer.prototype.isID = function (ch) {
         return /[a-z_]/i.test(ch);
+    };
+    Tokenizer.prototype.isPunc = function (ch) {
+        return ",;(){}[]".indexOf(ch) >= 0;
+    };
+    Tokenizer.prototype.isOpChar = function (ch) {
+        return "+-*/%=&|<>!".indexOf(ch) >= 0;
     };
     Tokenizer.prototype.skipComment = function () {
         // Move to the next char while in the comment line
