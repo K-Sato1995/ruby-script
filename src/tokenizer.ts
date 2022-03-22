@@ -38,6 +38,20 @@ class Tokenizer {
       return this.readID()
     }
 
+    if(this.isPunc(ch)) {
+      return {
+        type: "punc",
+        value: this.$input.next()
+      }
+    }
+
+    if(this.isOpChar(ch)) {
+      return {
+        type: "op",
+        value: this.readWhile(this.isOpChar)
+      }
+    }
+
     input.croak("Can't handle character: " + ch);
     // console.log(`Skipped: ${ch}`)
   }
@@ -53,6 +67,14 @@ class Tokenizer {
 
   isID(ch: string) {
     return /[a-z_]/i.test(ch);
+  }
+
+  isPunc(ch) {
+    return ",;(){}[]".indexOf(ch) >= 0
+  }
+
+  isOpChar(ch) {
+    return "+-*/%=&|<>!".indexOf(ch) >= 0;
   }
 
   skipComment() {
