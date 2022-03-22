@@ -1,12 +1,14 @@
 import InputStream from './input-stream'
 
-class Tokenizer {
-  $input: InputStream
-  keywords: string
+class Token {
+  private $input: InputStream
+  private keywords: string
+  private currentToken: Token | null
 
   constructor($input: InputStream) {
     this.$input = $input
     this.keywords = "if then else end true false def return"
+    this.currentToken = null
   }
 
   readNext() {
@@ -57,27 +59,27 @@ class Tokenizer {
   }
 
   // not sure if I understand this correctly
-  isWhiteSpace(ch: string) {
+  private isWhiteSpace(ch: string) {
     return " \t\n".indexOf(ch) >= 0;
   }
 
-  isDigit(ch: string) {
+  private isDigit(ch: string) {
     return /[0-9]/i.test(ch);
   }
 
-  isID(ch: string) {
+  private isID(ch: string) {
     return /[a-z_]/i.test(ch);
   }
 
-  isPunc(ch) {
+  private isPunc(ch) {
     return ",;(){}[]".indexOf(ch) >= 0
   }
 
-  isOpChar(ch) {
+  private isOpChar(ch) {
     return "+-*/%=&|<>!".indexOf(ch) >= 0;
   }
 
-  skipComment() {
+  private skipComment() {
     // Move to the next char while in the comment line
     this.readWhile((ch: string) => {
       return ch != "\n"
@@ -85,7 +87,7 @@ class Tokenizer {
     this.$input.next()
   }
 
-  readNum() {
+  private readNum() {
     let num = this.readWhile((ch) => {
       return this.isDigit(ch)
     })
@@ -93,7 +95,7 @@ class Tokenizer {
     return { type: "number", value: parseFloat(num) };
   }
 
-  readID() {
+  private readID() {
     const id = this.readWhile(this.isID)
     return {
       type: this.isKeyword(id) ? "kw" : "var",
@@ -101,11 +103,11 @@ class Tokenizer {
     }
   }
 
-  isKeyword(word: string) {
+  private isKeyword(word: string) {
     return this.keywords.indexOf(" " + word + " ") >= 0; 
   }
 
-  readEscaped(end: '"') {
+  private readEscaped(end: '"') {
     let escaped = false, str = ''
     this.$input.next()
     while(!this.$input.eof()) {
@@ -125,12 +127,12 @@ class Tokenizer {
     return str
   }
 
-  readString() {
+  private readString() {
     console.info( this.readEscaped('"'))
     return { type: "string", value: this.readEscaped('"')}
   }
 
-  readWhile(callback) {
+  private readWhile(callback) {
     let str = ""
     // Pass current char to the callback
     // and put that in str var while true
@@ -140,6 +142,24 @@ class Tokenizer {
     console.info(str)
     return str
   }
+
+  peek() {
+    return this.currentToken || (this.currentToken = this.readNext())
+  }
+
+  next() {
+    let token = this.currentToken
+    this.currentToken = null
+    return token || this.readNext()
+  }
+
+  eof(): boolean {
+    return this.peek() === null
+  }
+
+  croak(msg: string) {
+    this.$input.croak(msg)
+  }
 }
 
-export default Tokenizer
+export default Token
